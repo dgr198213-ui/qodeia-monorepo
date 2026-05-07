@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #10221f;
+  color: white;
+}
+
+/* PWA Install Prompt Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Moltbot Custom Styles */
+
+/* Animaciones para cards de tareas */
+@keyframes taskAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-card {
+  animation: taskAppear 0.3s ease-out;
+}
+
+/* Efecto de conexión */
+@keyframes connectionPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.connection-indicator {
+  animation: connectionPulse 2s ease-in-out infinite;
+}
+
+/* Loader personalizado para tareas en progreso */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.task-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Efecto de aprobación pendiente */
+@keyframes approvalGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+  }
+}
+
+.approval-card {
+  animation: approvalGlow 2s ease-in-out infinite;
+}
+
+/* Scrollbar personalizado */
+.moltbot-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.moltbot-panel::-webkit-scrollbar-track {
+  background: #1f2937; /* gray-800 */
+}
+
+.moltbot-panel::-webkit-scrollbar-thumb {
+  background: #4b5563; /* gray-600 */
+  border-radius: 4px;
+}
+
+.moltbot-panel::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* gray-500 */
+}
+
+/* Efecto de typing para thinking steps */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.thinking-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end);
+}
