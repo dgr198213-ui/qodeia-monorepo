@@ -41,3 +41,10 @@ qodeia-monorepo/
 - Zero Trust architecture
 - No exponer secrets en el repositorio
 - Usar `.env.example` como plantilla
+## Despliegue en Vercel
+Este ecosistema está configurado para desplegarse automáticamente en Vercel:
+- **Web Principal**: [web-qodeia.vercel.app](https://web-qodeia.vercel.app)
+- **Agente QodeIA**: [mi-agente-qode-ia.vercel.app](https://mi-agente-qode-ia.vercel.app)
+- **Plataforma IDE**: [plataforma-qd.vercel.app](https://plataforma-qd.vercel.app)
+
+Configuración actualizada el 8 de mayo de 2026.
