@@ -10,7 +10,7 @@ importers:
     dependencies:
       pnpm-store:
         specifier: link:/tmp/pnpm-store
-        version: link:../../tmp/pnpm-store
+        version: link:../tmp/pnpm-store
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -270,12 +270,18 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.105.1
         version: 2.105.3
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^19.0.0
         version: 19.2.6
       react-dom:
         specifier: ^19.0.0
         version: 19.2.6(react@19.2.6)
+      tailwind-merge:
+        specifier: ^3.3.1
+        version: 3.5.0
       zod:
         specifier: ^3.24.1
         version: 3.25.76
@@ -283,6 +289,12 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.17
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.14)
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
