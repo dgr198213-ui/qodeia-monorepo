@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 /**
  * Enhanced Context Memory Engine (CME)
  * Motor de atención contextual mejorado para QodeIA
@@ -255,7 +256,7 @@ export class EnhancedContextMemoryEngine {
       for (const block of context.blocks) {
         for (const entry of block.entries) {
           const contentLower = entry.content.toLowerCase();
-          if (queryTokens.some(token => contentLower.includes(token))) ||
+          if (queryTokens.some(token => contentLower.includes(token)) ||
               entry.metadata.keywords?.some((k: string) => queryTokens.includes(k.toLowerCase()))) {
             const relevance = this.calculateRelevance(entry, queryTokens);
             if (relevance >= this.settings.relevanceThreshold) {

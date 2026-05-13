@@ -298,7 +298,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   rightIcon?: React.ReactNode;
 }
 
-export function createInputStyles(hasError: boolean = false, isDisabled: boolean = false) {
+export function createInputStyles(hasError: boolean = false,  _isDisabled: boolean = false) {
   const baseStyles = `
     w-full px-4 py-2 rounded-lg border transition-colors duration-200
     focus:outline-none focus:ring-2 focus:ring-offset-0
