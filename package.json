@@ -2,6 +2,7 @@
   "name": "qodeia-monorepo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=20",
@@ -20,10 +21,22 @@
     "deps:check": "pnpm -r exec npm-check-updates --depth=0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@types/node": "^22.0.0",
+    "eslint": "^9.17.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
     "npm-check-updates": "^17.0.0",
+    "prettier": "^3.4.2",
     "turbo": "^2.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.18.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "pnpm-store": "link:/tmp/pnpm-store"
