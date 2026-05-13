@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@qodeia/shared/*": ["./packages/shared/src/*"],
+      "@qodeia/ui/*": ["./packages/ui/src/*"],
+      "@qodeia/types/*": ["./packages/types/src/*"],
+      "@qodeia/agent-core/*": ["./packages/agent-core/src/*"]
+    }
+  }
+}
