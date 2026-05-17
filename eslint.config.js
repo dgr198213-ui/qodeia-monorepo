@@ -26,6 +26,7 @@ export default [
   {
     ignores: [
       '**/dist/**',
+      '**/dev-dist/**',
       '**/.next/**',
       '**/node_modules/**',
       '**/supabase/functions/**',
