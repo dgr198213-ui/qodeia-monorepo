@@ -13,8 +13,8 @@ app.get('/health', async () => {
 const start = async () => {
   try {
     await app.listen({
-      port: 3001,
-      host: '0.0.0.0'
+      port: Number(process.env.PORT) || 3001,
+      host: process.env.HOST || '0.0.0.0'
     })
   } catch (err) {
     app.log.error(err)
