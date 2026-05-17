@@ -40,7 +40,7 @@ const MoltbotPanel = ({ onBack }) => {
             <h3 className="text-sm font-bold mb-4 uppercase tracking-widest text-gray-500">Actividad Reciente</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm border-b border-white/5 pb-2">
-                <span className="text-gray-300">Sincronización GitHub -> Slack</span>
+                <span className="text-gray-300">Sincronización GitHub &rarr; Slack</span>
                 <span className="text-[#13ecc8]">Activo</span>
               </div>
               <div className="flex items-center justify-between text-sm border-b border-white/5 pb-2">

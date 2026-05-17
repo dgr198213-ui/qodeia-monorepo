@@ -1,7 +1,7 @@
 // @qodeia/shared - SDK centralizado para QodeIA
 
 // Tokens (Design System)
-export * from './tokens/index.ts';
+export * from './tokens/index';
 
 // Types (Supabase)
 export type {
@@ -24,7 +24,7 @@ export type {
   UserRole,
   AgentStatus,
   MessageRole,
-} from './types/index.ts';
+} from './types/index';
 
 // Auth (Contratos)
 export type {
@@ -44,13 +44,13 @@ export type {
   Permission,
   RolePermissions,
   AuthContextValue,
-} from './auth/index.ts';
+} from './auth/index';
 export {
   rolePermissions,
   isAuthError,
   isSessionExpired,
   getSessionTimeRemaining,
-} from './auth/index.ts';
+} from './auth/index';
 
 // Utils
 export {
@@ -69,18 +69,14 @@ export {
   capitalize,
   slugify,
   parseEnvVar,
-} from './utils/index.ts';
+} from './utils/index';
 
-// Env (Schema)
+// Env
 export {
-  envSchema,
-  validateEnv,
   getEnv,
-  isServerSide,
-  getPublicEnv,
-  envExample,
-  type EnvSchema,
-} from './env/index.ts';
+  env,
+  type QodeIAEnv,
+} from './env/index';
 
 // Version
 export const SDK_VERSION = '0.1.0';

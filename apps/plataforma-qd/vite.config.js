@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
+import { patchWorkboxDevBundle } from './vite-plugins/patch-workbox-dev.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -16,6 +17,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    patchWorkboxDevBundle(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png'],
