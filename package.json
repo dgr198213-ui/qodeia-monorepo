@@ -37,8 +37,5 @@
       "eslint --fix",
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "pnpm-store": "link:/tmp/pnpm-store"
   }
 }
