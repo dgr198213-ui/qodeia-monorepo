@@ -7,20 +7,20 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/no-unsafe-function-type': 'off',
-      '@typescript-eslint/no-wrapper-object-types': 'off',
-      'no-undef': 'off',
-      'no-unused-vars': 'off',
-      'no-console': 'off',
-      'no-empty': 'off',
-      'no-constant-condition': 'off',
-      'no-extra-semi': 'off',
-      'prefer-const': 'off'
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'warn',
+      '@typescript-eslint/no-require-imports': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-unsafe-function-type': 'warn',
+      '@typescript-eslint/no-wrapper-object-types': 'warn',
+      'no-undef': 'warn',
+      'no-unused-vars': 'warn',
+      'no-console': 'warn',
+      'no-empty': 'warn',
+      'no-constant-condition': 'warn',
+      'no-extra-semi': 'warn',
+      'prefer-const': 'warn'
     }
   },
   {
