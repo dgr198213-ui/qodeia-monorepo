@@ -8,7 +8,7 @@ describe('CodeEditor', () => {
     render(<CodeEditor />);
     // Verifica que el título del módulo esté presente
     expect(screen.getByText('Editor de Código')).toBeInTheDocument();
-    // Verifica que el mensaje de "en desarrollo" esté presente
-    expect(screen.getByText(/Este módulo está actualmente en desarrollo/i)).toBeInTheDocument();
+    // Nota: la aserción del placeholder "en desarrollo" se eliminó porque el
+    // componente ya renderiza el editor Monaco real, no un stub.
   });
 });

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * Servicio de Interconexión MCP para Plataforma-qd
  * Conecta el IDE con el Agente y Howard OS
@@ -100,7 +101,10 @@ export const mcpService = {
    * Obtiene el estado del agente desde la DB operativa
    */
   async getAgentState(projectId: string) {
-    const { data, error } = await agentSupabase
+    // agentSupabase puede ser el cliente real o el mock JS de fallback definido
+    // en lib/supabase.js; el mock no replica toda la cadena del query builder,
+    // de ahí el cast. TODO: tipar el mock o eliminar el fallback.
+    const { data, error } = await (agentSupabase as any)
       .from('agent_state')
       .select('*')
       .eq('project_id', projectId)

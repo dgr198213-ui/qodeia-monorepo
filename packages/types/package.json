@@ -2,7 +2,7 @@
   "name": "@qodeia/types",
   "version": "0.1.0",
   "description": "Definiciones de tipos compartidas para QodeIA",
-  "private": false,
+  "private": true,
   "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=20",

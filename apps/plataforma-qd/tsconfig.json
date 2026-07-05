@@ -22,6 +22,9 @@
       "utils/*": ["./src/utils/*"]
     }
   },
-  "include": ["src/**/*", "components/**/*", "hooks/**/*", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "*.ts", "*.js", "vite-plugins/**/*"],
+  // components/ y hooks/ (raíz) están excluidos: es código muerto no importado
+  // desde src/ que depende de "@qodeia/agent-sdk", un paquete inexistente en el
+  // workspace. Eliminar o reescribir antes de reincorporarlos.
+  "exclude": ["node_modules", "dist", "components", "hooks", "lib"]
 }

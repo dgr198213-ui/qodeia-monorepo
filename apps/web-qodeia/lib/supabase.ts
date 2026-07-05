@@ -7,8 +7,11 @@ import { createBrowserClient } from '@supabase/ssr';
  * Utiliza @supabase/ssr para integrarse con Next.js en el cliente.
  */
 export const getOperativeSupabase = () => createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  // Fallback a placeholder (mismo patrón que knowledgeSupabase y supabase):
+  // sin él, el prerender de `next build` lanza excepción cuando las env vars
+  // no están definidas (p. ej. en CI) y rompe el build de /admin/mcp.
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
 );
 
 /**
