@@ -2,7 +2,7 @@
   "name": "@qodeia/arch",
   "version": "0.1.0",
   "description": "Documentación de arquitectura QodeIA",
-  "private": false,
+  "private": true,
   "type": "module",
   "packageManager": "pnpm@10.0.0",
   "engines": {

@@ -59,7 +59,7 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const updateProfile = useCallback(async (updates: Partial<AuthUser>) => {
-    setUser(prev => prev ? { ...prev, ...updates } : null);
+    setUser((prev: AuthUser | null) => (prev ? { ...prev, ...updates } : null));
   }, []);
 
   return {

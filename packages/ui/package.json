@@ -2,7 +2,7 @@
   "name": "@qodeia/ui",
   "version": "0.1.0",
   "description": "Componentes UI compartidos para QodeIA",
-  "private": false,
+  "private": true,
   "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=20",

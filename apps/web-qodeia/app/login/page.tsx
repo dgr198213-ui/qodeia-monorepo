@@ -1,17 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { getOperativeSupabase } from '@/lib/supabase';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  // Cliente compartido con fallback seguro para el prerender del build
+  const supabase = getOperativeSupabase();
   const router = useRouter();
 
   const handleGoogleLogin = async () => {

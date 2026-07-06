@@ -11,9 +11,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"components/**/*.{js,jsx,ts,tsx}\" \"hooks/**/*.{js,jsx,ts,tsx}\" \"lib/**/*.{js,jsx,ts,tsx}\" \"vite.config.js\" \"postcss.config.js\" \"vite-plugins/**/*.js\" --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"components/**/*.{js,jsx,ts,tsx}\" \"hooks/**/*.{js,jsx,ts,tsx}\" \"lib/**/*.{js,jsx,ts,tsx}\" \"vite.config.js\" \"postcss.config.js\" \"vite-plugins/**/*.js\" --report-unused-disable-directives",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

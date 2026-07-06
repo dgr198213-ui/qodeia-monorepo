@@ -2,7 +2,7 @@
   "name": "@qodeia/shared",
   "version": "0.1.0",
   "description": "QodeIA Shared packages - Auth, Design System, API Client, Hooks",
-  "private": false,
+  "private": true,
   "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=20",
