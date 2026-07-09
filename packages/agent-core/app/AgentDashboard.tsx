@@ -6,8 +6,8 @@ import { CredentialPanel } from './components/CredentialPanel';
 import { Terminal, Shield, Zap, Users, BookOpen, Activity, ChevronRight, Loader2 } from 'lucide-react';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
 );
 
 export default function AgentDashboard() {

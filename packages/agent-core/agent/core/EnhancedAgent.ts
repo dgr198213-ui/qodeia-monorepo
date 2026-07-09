@@ -252,8 +252,8 @@ export class EnhancedAgent {
 
   private async initializeCME(): Promise<void> {
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder';
 
       this.cme = new EnhancedContextMemoryEngine(supabaseUrl, supabaseKey);
       await this.cme.initializeProject(this.config.projectId || this.config.sessionId);
