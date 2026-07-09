@@ -56,18 +56,16 @@ export default function HomePage() {
             >
               Comenzar Ahora <ArrowRight size={20} />
             </Link>
-            <button
-              onClick={() => {
-                const email = prompt('Ingresa tu email para acceso temprano:');
-                if (email) {
-                  console.log('Email registrado:', email);
-                  alert('¡Gracias! Te contactaremos pronto.');
-                }
-              }}
-              className="px-8 py-3 border border-emerald-500 text-emerald-400 rounded-lg font-semibold hover:bg-emerald-500/10 transition"
+            {/* TODO: el botón original abría un prompt() placeholder que solo
+                hacía console.log del email. Se sustituye por un enlace a /login;
+                si se quiere captura real de leads, crear un Client Component
+                con formulario y endpoint. */}
+            <Link
+              href="/login"
+              className="px-8 py-3 border border-emerald-500 text-emerald-400 rounded-lg font-semibold hover:bg-emerald-500/10 transition flex items-center justify-center"
             >
               Acceso Temprano
-            </button>
+            </Link>
           </div>
         </div>
 
