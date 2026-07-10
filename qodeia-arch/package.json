@@ -1,7 +1,7 @@
 {
   "name": "@qodeia/arch",
   "version": "0.1.0",
-  "description": "Documentación de arquitectura QodeIA",
+  "description": "App full-stack de arquitectura QodeIA (Vite + Express + Drizzle). Heredada; ver CLAUDE.md.",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.0.0",
@@ -102,7 +102,6 @@
     "tw-animate-css": "^1.2.5",
     "typescript": "^5.5.0",
     "vite": "^5.4.0",
-    "vite-plugin-manus-runtime": "^0.0.57",
     "vitest": "^2.1.4"
   }
 }

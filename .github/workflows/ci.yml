@@ -48,18 +48,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # agent-core reincorporado al pipeline (Fase 2 completada: 0 errores TS,
-      # 96/96 tests en verde). TODO(arch): @qodeia/arch sigue excluido con
-      # `--filter=!@qodeia/arch` — 22 errores TS, app heredada pendiente de
-      # reubicar (Fase 3; ver README y CLAUDE.md).
+      # Pipeline completo: todos los paquetes incluidos (Fase 3C).
       - name: Lint
-        run: pnpm lint --filter=!@qodeia/arch
+        run: pnpm lint
 
       - name: Typecheck
-        run: pnpm typecheck --filter=!@qodeia/arch
+        run: pnpm typecheck
 
       - name: Test
-        run: pnpm test --filter=!@qodeia/arch
+        run: pnpm test
 
       - name: Build
-        run: pnpm build --filter=!@qodeia/arch
+        run: pnpm build

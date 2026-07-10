@@ -2,7 +2,7 @@
 
 > Documento de continuidad para sesiones de trabajo (humanas o con agentes).
 > **Actualízalo al final de cada sesión que cambie el estado del repo.**
-> Última actualización: 2026-07-10 (Fases 3A y 3B completadas).
+> Última actualización: 2026-07-10 (Fase 3C completada — CI sin exclusiones).
 
 ## Qué es este repo
 
@@ -16,7 +16,7 @@ La descripción funcional y el diagrama están en el README.
 |---|---|
 | CI (`.github/workflows/ci.yml`) | ✅ Verde. `--frozen-lockfile` obligatorio. Un único workflow. |
 | `@qodeia/agent-core` | ✅ En el pipeline. 0 errores TS, 96/96 tests. |
-| `@qodeia/arch` (qodeia-arch) | ⚠️ **Excluido del CI** (`--filter=!@qodeia/arch`): 22 errores TS. App heredada pendiente de reubicar (Fase 3). |
+| `@qodeia/arch` (qodeia-arch) | ✅ En el pipeline (Fase 3C): 0 errores TS. App Vite+Express generada por Manus; saneada (plugin manus-runtime y 5 componentes shadcn muertos eliminados). Sigue en la raíz porque el Root Directory de su proyecto Vercel apunta ahí — moverla a `apps/` requiere cambiar ese ajuste en el dashboard a la vez. |
 | Deploys Vercel | ✅ 4 proyectos en producción: web-qodeia, plataforma-qd, agent-core, qodeia-arch. `api`/`api-houh` son Fastify y NO se pueden desplegar en Vercel. |
 | Env vars en Vercel | ⚠️ Pendientes de configurar por Dani. El código usa fallbacks `placeholder` que permiten compilar pero no conectar. |
 
@@ -89,6 +89,21 @@ La descripción funcional y el diagrama están en el README.
 - **SolveItIterator**: descomposición iterativa de problemas con respuesta
   JSON estructurada (mismo patrón que BiasFirewall) y render del plan.
 - Los 4 usan el helper `agentAuth.js` (JWT único de la Fase 3A).
+
+## Fase 3C — higiene estructural (completada)
+
+- **qodeia-arch saneado**: 22 errores TS → 0. Eliminados `vite-plugin-manus-runtime`
+  (artefacto del entorno Manus, causa del error de overload en vite.config) y 5
+  ficheros muertos (ComponentShowcase, Map, ui/chart, ui/resizable, ui/calendar —
+  ninguno ruteado ni importado). Rutas reales: Home, Dashboard, Credentials.
+- **Paquetes esqueleto eliminados**: orchestration, workflows, prompts, tools,
+  memory (52 líneas de stubs en total, cero importadores). Si algún día se
+  extrae la lógica de agent-core, se crearán con contenido real, no vacíos.
+- **plataforma-qd**: borrados los dirs raíz components/, hooks/ y lib/ (código
+  muerto que dependía del paquete inexistente @qodeia/agent-sdk); lint con
+  ratchet `--max-warnings 260` (hoy ~229: pueden bajar, no subir).
+- **CI SIN FILTROS por primera vez**: lint/typecheck/test/build sobre el
+  monorepo completo.
 
 ## Auth del ecosistema (decisión 2026-07-10)
 

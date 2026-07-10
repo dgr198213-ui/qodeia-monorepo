@@ -2,9 +2,10 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
-import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
-const plugins = [react(), tailwindcss(), vitePluginManusRuntime()];
+// vite-plugin-manus-runtime eliminado (Fase 3C): artefacto del entorno
+// de Manus sin función en producción y causa del error TS de overload.
+const plugins = [react(), tailwindcss()];
 
 export default defineConfig({
   plugins,
