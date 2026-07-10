@@ -97,17 +97,21 @@ export class MCPClient {
   private cache: Map<string, { data: any; expires: number }> = new Map();
 
   constructor(config?: any) {
+    this.config = this.parseConfig(config);
+  }
+
+  /**
+   * Parsea y valida una configuración. Ante config inválida registra el error
+   * y devuelve la configuración por defecto en lugar de lanzar: el cliente MCP
+   * debe degradar con elegancia, nunca tumbar al agente por una config mala.
+   */
+  private parseConfig(config?: any): MCPConfig {
     if (config) {
-      this.config = MCPConfigSchema.parse(config);
-    } else {
-      this.config = {
-        mcpServers: {},
-        defaults: {
-          timeout: 30000,
-          retries: 3,
-          cache: { enabled: true, ttl: 3600 },
-        },
-      };
+      const parsed = MCPConfigSchema.safeParse(config);
+      if (parsed.success) {
+        return parsed.data;
+      }
+      console.error('[MCPClient] Configuración inválida, usando valores por defecto:', parsed.error.message);
     }
     return {
       mcpServers: {},
@@ -123,7 +127,14 @@ export class MCPClient {
    * Actualiza la configuración del cliente
    */
   updateConfig(config: any) {
-    this.config = this.parseConfig(config);
+    const parsed = MCPConfigSchema.safeParse(config);
+    if (!parsed.success) {
+      // Conservar la configuración previa: una actualización inválida no debe
+      // resetear a valores por defecto un cliente que ya funcionaba.
+      console.error('[MCPClient] updateConfig recibió configuración inválida, se conserva la anterior:', parsed.error.message);
+      return;
+    }
+    this.config = parsed.data;
   }
 
   /**
@@ -319,13 +330,10 @@ export class MCPClient {
           }
           child.once('exit', () => resolve());
           child.kill('SIGTERM');
-          // Forzar SIGKILL si no termina en 3s
-          setTimeout(() => {
-            if (!child.killed) {
-              child.kill('SIGKILL');
-            }
-            resolve();
-          }, 3000);
+          // No bloquear el cierre si el proceso no emite 'exit' en 3s.
+          // Nota: se eliminó la escalación a SIGKILL porque era código muerto
+          // (en Node, child.killed pasa a true en cuanto se envía SIGTERM).
+          setTimeout(() => resolve(), 3000);
         })
       );
       console.log(`[MCP:${name}] Desconectando...`);
@@ -409,7 +417,7 @@ export class MCPClient {
 
         // No reintentar en errores de lógica (solo en errores de red/timeout)
         if (
-          lastError.message.includes('no conectado') ||
+          lastError.message.includes('no está conectado') ||
           lastError.message.includes('no encontrado')
         ) {
           break;
@@ -431,7 +439,7 @@ export class MCPClient {
   ): Promise<any> {
     const child = this.servers.get(server);
     if (!child || child.killed || child.exitCode !== null) {
-      throw new Error(`Servidor MCP "${server}" no conectado`);
+      throw new Error(`Servidor MCP "${server}" no está conectado o ha terminado`);
     }
 
     return new Promise((resolve, reject) => {
@@ -493,9 +501,11 @@ let mcpClient: MCPClient | null = null;
 export function getMCPClient(config?: any): MCPClient {
   if (!mcpClient) {
     mcpClient = new MCPClient(config);
-  } else if (config) {
-    // Actualizar configuración del singleton si se proporciona nueva configuración
-    mcpClient = new MCPClient(config);
+  } else if (config && config.mcpServers && Object.keys(config.mcpServers).length > 0) {
+    // Actualizar la instancia existente solo si la config trae servidores:
+    // una config vacía no debe pisar la configuración operativa del singleton.
+    // (Crear un cliente nuevo dejaría procesos MCP huérfanos.)
+    mcpClient.updateConfig(config);
   }
   return mcpClient;
 }

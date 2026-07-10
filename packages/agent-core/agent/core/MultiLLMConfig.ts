@@ -11,7 +11,7 @@
  */
 
 import { generateText, generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 
 /**
  * Tipos de LLMs disponibles (v4.0)
@@ -366,11 +366,12 @@ export async function createLLMClient(config: SpecialistConfig) {
     throw new Error(`API key not found for provider: ${config.provider}`);
   }
 
-  // Usar openai como base para compatibilidad con múltiples proveedores
-  return openai(config.model, {
+  // ai-sdk v4: apiKey/baseURL se pasan al crear el provider, no al modelo
+  const provider = createOpenAI({
     apiKey,
     baseURL: getLLMBaseURL(config.provider),
   });
+  return provider(config.model);
 }
 
 /**

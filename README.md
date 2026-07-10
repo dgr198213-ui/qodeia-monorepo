@@ -8,13 +8,13 @@ Monorepo gestionado con **pnpm 10 + Turborepo 2** (Node >= 20).
 
 ## Estado del proyecto
 
-> Última actualización: julio 2026
+> Última actualización: 10 julio 2026 · Contexto de continuidad entre sesiones en [`CLAUDE.md`](./CLAUDE.md)
 
 | Área | Estado |
 |---|---|
 | Infraestructura del monorepo (pnpm, Turbo, ESLint 9, Husky, CI) | ✅ Operativa |
 | `@qodeia/shared`, `apps/web-qodeia`, `apps/api`, paquetes base | ✅ Compilan y pasan CI |
-| `@qodeia/agent-core` | ⚠️ **Excluido temporalmente del CI** — migración incompleta al monorepo (36 errores TS por el SDK `ai` v4 y cliente Supabase sin tipar; 60/157 tests fallando). Ver plan de consolidación. |
+| `@qodeia/agent-core` | ✅ **Reincorporado al CI** (Fase 2): 0 errores TS, 96/96 tests. Cliente Supabase tipado como `any` pendiente de tipos generados. |
 | Paquetes `orchestration`, `workflows`, `prompts`, `tools`, `memory` | 🚧 Esqueletos — la lógica real vive aún en `agent-core/agent/` |
 | Esquemas SQL | ⚠️ Múltiples ficheros dispersos; pendiente consolidar en `supabase/migrations/` como fuente de verdad única |
 
@@ -22,7 +22,7 @@ El desarrollo activo está actualmente pausado en favor de otros proyectos. El C
 
 ### Plan de consolidación (pendiente)
 
-1. **Fase 2 — agent-core**: tipar el cliente Supabase con tipos generados, adaptar al API de `ai` v4, reparar tests y retirar los filtros `--filter=!@qodeia/agent-core` de `.github/workflows/ci.yml`.
+1. ~~**Fase 2 — agent-core**~~ ✅ Completada: 36 errores TS → 0, tests 96/96, filtros de CI retirados, tests duplicados de `__tests__/` consolidados en los colocados junto al código.
 2. **Fase 3 — arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
 
 ---

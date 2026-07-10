@@ -3,7 +3,7 @@
  * Simplified version for the QodeIA Agent
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // TYPES
@@ -32,14 +32,15 @@ export interface SearchResult {
 // ============================================================================
 
 export class EnhancedContextMemoryEngine {
-  private supabase: ReturnType<typeof createClient>;
+  // TODO: sustituir <any> por los tipos generados de Supabase (supabase gen types)
+  private supabase: SupabaseClient<any>;
   private projectId: string;
   private entries: Map<string, ContextEntry> = new Map();
   private semanticIndex: Map<string, Set<string>> = new Map();
   private maxEntries: number = 1000;
 
   constructor(supabaseUrl: string, supabaseKey: string, projectId: string) {
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabase = createClient<any>(supabaseUrl, supabaseKey);
     this.projectId = projectId;
   }
 
