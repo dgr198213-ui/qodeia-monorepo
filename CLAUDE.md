@@ -2,7 +2,7 @@
 
 > Documento de continuidad para sesiones de trabajo (humanas o con agentes).
 > **Actualízalo al final de cada sesión que cambie el estado del repo.**
-> Última actualización: 2026-07-10 (Fase 2 completada + estudio de ecosistema).
+> Última actualización: 2026-07-10 (Fase 3A completada).
 
 ## Qué es este repo
 
@@ -56,6 +56,25 @@ La descripción funcional y el diagrama están en el README.
 6. **Todos los paquetes `"private": true`**. Nada de este repo se publica a npm.
 7. **Next.js**: mantener en la última 15.x parcheada (o superior). Vercel bloquea
    deploys con versiones vulnerables.
+
+## Fase 3A — columna vertebral (completada)
+
+- **Contrato IDE↔Agente implementado**: 7 rutas nuevas en agent-core —
+  `/api/health`, `/api/agent/{chat,execute,memory,sync,sync-solution}` y
+  `/api/mcp/sync` — como fachadas finas sobre CEOOrchestrator y
+  EnhancedContextMemory. Auth compartida en `lib/auth.ts` (verifyAuth).
+- **Esquema unificado**: `supabase/migrations/0001..0005` es LA fuente de
+  verdad (núcleo operativo con RLS corregidas, comunidad, plataforma IDE,
+  governance+memoria — incluye tablas que el código usaba sin CREATE TABLE —
+  y ecosistema: `kb_sources` + `user_credentials`). Los 9 SQL antiguos están
+  en `supabase/legacy/` solo como referencia; NO aplicarlos.
+- **JWT único en el IDE**: helper `apps/plataforma-qd/src/services/agentAuth.js`
+  (getAgentHeaders/getAgentToken/AGENT_BASE_URL). Cableado en mcp-service,
+  NoCodeChat, BiasFirewall, HypeDetector y AgentApiClient (ensureSessionToken).
+  AGENT_URL por defecto → `https://qodeia-monorepo-agent-core.vercel.app`.
+- **Pendiente manual (Dani)**: aplicar las migraciones 0001..0005 en el
+  proyecto Supabase único (SQL Editor, en orden) y poner las env vars reales
+  en Vercel. Hasta entonces el contrato existe pero la BD no.
 
 ## Estudio del ecosistema (leer antes de la Fase 3)
 

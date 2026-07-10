@@ -13,7 +13,9 @@ import { ArrowLeft, Radar, Search, TrendingUp, Zap, Loader2, X, CheckCircle } fr
  * - Análisis heurístico local como fallback
  */
 
-const AGENT_URL = import.meta.env.VITE_AGENT_URL || 'https://mi-agente-qode-ia.vercel.app';
+import { getAgentHeaders, AGENT_BASE_URL } from '../../../services/agentAuth';
+
+const AGENT_URL = AGENT_BASE_URL;
 
 const HYPE_KEYWORDS = [
   'revolucionario', 'sin precedentes', 'cambia todo', 'nunca antes visto',
@@ -48,7 +50,7 @@ const HypeDetector = ({ onBack }) => {
     try {
       const response = await fetch(`${AGENT_URL}/api/agent`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAgentHeaders(),
         body: JSON.stringify({
           message: `Analiza el siguiente texto/noticia para detectar exageración, marketing agresivo o "hype" sin respaldo técnico.
 Responde ÚNICAMENTE con un JSON con la siguiente estructura:
