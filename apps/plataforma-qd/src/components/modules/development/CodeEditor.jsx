@@ -1,17 +1,103 @@
 import { useState } from 'react';
-import { ArrowLeft, Code, Save, Play, Sparkles } from 'lucide-react';
+import { ArrowLeft, Code, Save, Sparkles, Send, X, CornerDownLeft, Loader2 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { EditorBridge } from '../../../lib/editor-bridge';
 import { useCodeStore } from '../../../store/codeStore';
+import { getAgentHeaders, AGENT_BASE_URL } from '../../../services/agentAuth';
+import { supabase } from '../../../lib/supabase';
 
+/**
+ * Editor de Código conectado al Agente (Fase 3B).
+ *
+ * - "Pedir al Agente": envía la instrucción + el buffer actual como
+ *   `editorContext` a POST /api/agent (el endpoint ya soportaba este campo
+ *   desde el principio — estaba implementado y sin usar).
+ * - La respuesta se muestra en un panel; si contiene un bloque de código,
+ *   puede insertarse directamente en el editor vía EditorBridge.
+ * - "Guardar": persiste el buffer en `project_files` del proyecto activo.
+ */
 const CodeEditor = ({ onBack }) => {
   const { currentProject } = useCodeStore();
   const [language, setLanguage] = useState('javascript');
-  const [theme, setTheme] = useState('vs-dark');
+  const [theme] = useState('vs-dark');
+  const [askOpen, setAskOpen] = useState(false);
+  const [prompt, setPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [agentReply, setAgentReply] = useState(null); // { text, code }
+  const [saveState, setSaveState] = useState('idle'); // idle | saving | saved | error
 
   function handleEditorDidMount(editor, monaco) {
     EditorBridge.getInstance().setEditor(editor, monaco);
-    console.log("Editor Monaco montado y registrado en EditorBridge");
+  }
+
+  /** Extrae el primer bloque ```...``` de una respuesta markdown. */
+  function extractCode(text) {
+    const match = /```[a-zA-Z]*\n([\s\S]*?)```/.exec(text || '');
+    return match ? match[1] : null;
+  }
+
+  async function askAgent() {
+    if (!prompt.trim() || loading) return;
+    setLoading(true);
+    setAgentReply(null);
+    try {
+      const bridge = EditorBridge.getInstance();
+      const code = bridge?.editor?.getValue?.() || '';
+
+      const response = await fetch(`${AGENT_BASE_URL}/api/agent`, {
+        method: 'POST',
+        headers: await getAgentHeaders(),
+        body: JSON.stringify({
+          message: prompt,
+          projectId: currentProject?.id,
+          context: { language, code },
+        }),
+      });
+      if (!response.ok) throw new Error(`Error del agente: ${response.status}`);
+      const data = await response.json();
+      const text = data.response || 'El agente no devolvió respuesta.';
+      setAgentReply({ text, code: extractCode(text) });
+    } catch (error) {
+      setAgentReply({ text: `⚠️ ${error.message}`, code: null });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function insertCode() {
+    if (agentReply?.code) {
+      // insertCode('replace') es la API oficial del bridge para código del agente
+      EditorBridge.getInstance().insertCode(agentReply.code, 'replace');
+      setAgentReply(null);
+      setAskOpen(false);
+      setPrompt('');
+    }
+  }
+
+  async function saveFile() {
+    if (!currentProject?.id || saveState === 'saving') return;
+    setSaveState('saving');
+    try {
+      const code = EditorBridge.getInstance()?.editor?.getValue?.() || '';
+      const path = `editor/${currentProject.id}.${language === 'python' ? 'py' : language === 'typescript' ? 'ts' : 'js'}`;
+      const { error } = await supabase.from('project_files').upsert(
+        {
+          project_id: currentProject.id,
+          path,
+          content: code,
+          language,
+          size: code.length,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'project_id,path' }
+      );
+      if (error) throw error;
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 2000);
+    } catch {
+      setSaveState('error');
+      setTimeout(() => setSaveState('idle'), 3000);
+    }
   }
 
   return (
@@ -39,7 +125,7 @@ const CodeEditor = ({ onBack }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          <select 
+          <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-[#13ecc8]"
@@ -51,18 +137,66 @@ const CodeEditor = ({ onBack }) => {
             <option value="css">CSS</option>
             <option value="json">JSON</option>
           </select>
-          
-          <button className="flex items-center gap-2 px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs transition-all">
+
+          <button
+            onClick={saveFile}
+            disabled={!currentProject?.id}
+            title={currentProject?.id ? 'Guardar en el proyecto' : 'Selecciona un proyecto para guardar'}
+            className="flex items-center gap-2 px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs transition-all disabled:opacity-40"
+          >
             <Save size={14} />
-            <span>Guardar</span>
+            <span>{saveState === 'saving' ? 'Guardando…' : saveState === 'saved' ? 'Guardado ✓' : saveState === 'error' ? 'Error' : 'Guardar'}</span>
           </button>
-          
-          <button className="flex items-center gap-2 px-4 py-1.5 bg-[#13ecc8] text-black font-bold rounded-lg text-xs hover:scale-105 transition-all">
-            <Play size={14} fill="currentColor" />
-            <span>Ejecutar</span>
+
+          <button
+            onClick={() => setAskOpen((v) => !v)}
+            className="flex items-center gap-2 px-4 py-1.5 bg-[#13ecc8] text-black font-bold rounded-lg text-xs hover:scale-105 transition-all"
+          >
+            <Sparkles size={14} />
+            <span>Pedir al Agente</span>
           </button>
         </div>
       </div>
+
+      {/* Panel del Agente */}
+      {askOpen && (
+        <div className="p-4 border-b border-white/5 bg-[#0d1117] space-y-3">
+          <div className="flex items-center gap-2">
+            <input
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && askAgent()}
+              placeholder="P. ej.: genera una función que valide emails, refactoriza este código, explica qué hace…"
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#13ecc8]"
+            />
+            <button
+              onClick={askAgent}
+              disabled={loading || !prompt.trim()}
+              className="p-2 bg-[#13ecc8] text-black rounded-lg disabled:opacity-40"
+            >
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            </button>
+            <button onClick={() => { setAskOpen(false); setAgentReply(null); }} className="p-2 text-gray-400 hover:text-white">
+              <X size={16} />
+            </button>
+          </div>
+
+          {agentReply && (
+            <div className="bg-white/5 border border-white/10 rounded-lg p-3 max-h-56 overflow-y-auto space-y-2">
+              <pre className="text-xs whitespace-pre-wrap text-gray-200 font-mono">{agentReply.text}</pre>
+              {agentReply.code && (
+                <button
+                  onClick={insertCode}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[#13ecc8]/10 border border-[#13ecc8]/30 text-[#13ecc8] rounded-lg text-xs hover:bg-[#13ecc8]/20"
+                >
+                  <CornerDownLeft size={14} />
+                  Insertar código en el editor
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Editor Area */}
       <div className="flex-1 relative">
@@ -83,12 +217,6 @@ const CodeEditor = ({ onBack }) => {
             fontLigatures: true,
           }}
         />
-        
-        {/* Floating AI Indicator */}
-        <div className="absolute bottom-6 right-6 flex items-center gap-2 px-4 py-2 bg-[#13ecc8]/10 border border-[#13ecc8]/20 rounded-full backdrop-blur-md animate-pulse">
-          <Sparkles size={14} className="text-[#13ecc8]" />
-          <span className="text-[10px] text-[#13ecc8] font-bold uppercase tracking-wider">AI Bridge Active</span>
-        </div>
       </div>
     </div>
   );

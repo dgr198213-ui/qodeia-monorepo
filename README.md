@@ -24,7 +24,8 @@ El desarrollo activo está actualmente pausado en favor de otros proyectos. El C
 
 1. ~~**Fase 2 — agent-core**~~ ✅ Completada: 36 errores TS → 0, tests 96/96, filtros de CI retirados, tests duplicados de `__tests__/` consolidados en los colocados junto al código.
 2. ~~**Fase 3A — columna vertebral**~~ ✅ Completada: contrato IDE↔Agente (7 endpoints), esquema unificado en migraciones, JWT único en los módulos del IDE.
-3. **Fase 3B/3C — prototipos y arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
+3. ~~**Fase 3B — prototipos del IDE**~~ ✅ Completada: CodeEditor↔Agente, Connectors, MoltbotPanel y SolveItIterator conectados de verdad al agente.
+4. **Fase 3C — arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
 
 ---
 
