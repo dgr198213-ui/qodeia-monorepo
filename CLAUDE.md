@@ -2,7 +2,7 @@
 
 > Documento de continuidad para sesiones de trabajo (humanas o con agentes).
 > **Actualízalo al final de cada sesión que cambie el estado del repo.**
-> Última actualización: 2026-07-10 (Fase 2 completada).
+> Última actualización: 2026-07-10 (Fase 2 completada + estudio de ecosistema).
 
 ## Qué es este repo
 
@@ -56,6 +56,17 @@ La descripción funcional y el diagrama están en el README.
 6. **Todos los paquetes `"private": true`**. Nada de este repo se publica a npm.
 7. **Next.js**: mantener en la última 15.x parcheada (o superior). Vercel bloquea
    deploys con versiones vulnerables.
+
+## Estudio del ecosistema (leer antes de la Fase 3)
+
+`docs/ARQUITECTURA-ECOSISTEMA.md` contiene el mapa completo de integración:
+los 4 gaps que impiden que las piezas funcionen como plataforma (contrato de
+API roto entre IDE y agente, identidad fragmentada en 3 Supabases, esquema de
+datos dividido, credenciales en localStorage), 4 ADRs con recomendación, el
+inventario de los 13 módulos del IDE con su estado real, y el roadmap 3A/3B/3C.
+Hallazgo clave: **ningún flujo IDE→Agente funciona hoy de extremo a extremo**
+(los endpoints que consume AgentApiClient no existen y los módulos que llaman
+a /api/agent no envían JWT).
 
 ## Deuda conocida / próximos pasos
 
