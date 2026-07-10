@@ -48,19 +48,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # TODO(agent-core, arch): @qodeia/agent-core y @qodeia/arch están excluidos
-      # temporalmente del pipeline. agent-core: 36 errores TS y 60 tests fallando por
-      # migración incompleta (SDK `ai` v4, Supabase sin tipar). arch: 22 errores TS,
-      # tipar). Retirar los filtros `--filter=!@qodeia/agent-core --filter=!@qodeia/arch` cuando se
-      # completen las Fases 2-3 del plan de consolidación (ver README).
+      # agent-core reincorporado al pipeline (Fase 2 completada: 0 errores TS,
+      # 96/96 tests en verde). TODO(arch): @qodeia/arch sigue excluido con
+      # `--filter=!@qodeia/arch` — 22 errores TS, app heredada pendiente de
+      # reubicar (Fase 3; ver README y CLAUDE.md).
       - name: Lint
-        run: pnpm lint --filter=!@qodeia/agent-core --filter=!@qodeia/arch
+        run: pnpm lint --filter=!@qodeia/arch
 
       - name: Typecheck
-        run: pnpm typecheck --filter=!@qodeia/agent-core --filter=!@qodeia/arch
+        run: pnpm typecheck --filter=!@qodeia/arch
 
       - name: Test
-        run: pnpm test --filter=!@qodeia/agent-core --filter=!@qodeia/arch
+        run: pnpm test --filter=!@qodeia/arch
 
       - name: Build
-        run: pnpm build --filter=!@qodeia/agent-core --filter=!@qodeia/arch
+        run: pnpm build --filter=!@qodeia/arch

@@ -80,6 +80,11 @@ Respond in the same language as the user request.`
       };
     }
   }
+
+  /** Vacía el historial de conversación del specialist (paridad con el resto). */
+  clearHistory() {
+    this.conversationHistory = [];
+  }
 }
 
 export async function createNoCodeSpecialist(): Promise<NoCodeSpecialist> {

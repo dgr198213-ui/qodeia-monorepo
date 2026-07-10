@@ -304,3 +304,51 @@ function logError(message: string, error: any) {
     timestamp: new Date().toISOString()
   }));
 }
+
+/**
+ * Devuelve los scores de PageRank persistidos, indexados por `node_key`.
+ *
+ * Con `contextName` lee los ranks contextuales (`agent_node_ranks`); sin él,
+ * los globales (`agent_nodes.rank_score`). Ante cualquier error devuelve un
+ * mapa vacío: los consumidores tratan la ausencia de score como 0 y el
+ * ranking degrada con elegancia en vez de romper el flujo del agente.
+ *
+ * @param contextName - Nombre del contexto para scores contextuales; omitir para globales.
+ */
+export async function getPageRankScores(contextName?: string): Promise<Record<string, number>> {
+  try {
+    if (contextName) {
+      const { data: ctxData, error: ctxError } = await supabase
+        .from('agent_contexts')
+        .select('id')
+        .eq('name', contextName)
+        .single();
+
+      if (ctxError || !ctxData) return {};
+
+      const [{ data: ranks }, { data: nodes }] = await Promise.all([
+        supabase.from('agent_node_ranks').select('node_id, rank_score').eq('context_id', ctxData.id),
+        supabase.from('agent_nodes').select('id, node_key'),
+      ]);
+
+      if (!ranks || !nodes) return {};
+      const keyById = new Map(nodes.map((n: any) => [n.id, n.node_key]));
+      const scores: Record<string, number> = {};
+      for (const r of ranks as any[]) {
+        const key = keyById.get(r.node_id);
+        if (key) scores[key] = r.rank_score;
+      }
+      return scores;
+    }
+
+    const { data, error } = await supabase
+      .from('agent_nodes')
+      .select('node_key, rank_score');
+
+    if (error || !data) return {};
+    return Object.fromEntries((data as any[]).map(n => [n.node_key, n.rank_score]));
+  } catch (error) {
+    logError('Error obteniendo scores de PageRank', error);
+    return {};
+  }
+}

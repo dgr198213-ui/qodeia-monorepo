@@ -235,22 +235,3 @@ function logInfo(message: string, data?: any) {
   }));
 }
 
-/**
- * Logs an error event as a structured JSON object to the process error stream.
- *
- * The emitted JSON includes a severity level (`error`), module identifier (`agent-core`), the
- * provided message, a string representation of the `error`, and an ISO8601 timestamp.
- *
- * @param message - Human-readable description of the error event
- * @param error - Error instance or any value providing additional error details; if an `Error`
- *                object is supplied, its `message` is used
- */
-function logError(message: string, error: any) {
-  console.error(JSON.stringify({
-    level: 'error',
-    module: 'agent-core',
-    message,
-    error: error instanceof Error ? error.message : error,
-    timestamp: new Date().toISOString()
-  }));
-}

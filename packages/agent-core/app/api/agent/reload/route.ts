@@ -3,9 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST() {
   try {
     // Lógica para resetear el cliente singleton de MCP si existe en el ámbito global
-    // @ts-expect-error - Global property for MCP client
     if ((global as any).__mcp_client) {
-      // @ts-expect-error - Global property for MCP client
       delete (global as any).__mcp_client;
     }
     

@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 /**
  * Función de logging consistente con el resto del ecosistema
  */
-function logError(message: string, error: any) {
+function logError(message: string, error?: any) {
   console.error(JSON.stringify({
     level: 'error',
     module: 'agent-memory-vector',
@@ -143,22 +143,6 @@ export async function saveMemory(
     logError('Error al guardar memoria:', error);
     throw error;
   }
-}
-
-/**
- * Emit a structured error log with module and timestamp.
- *
- * @param message - Human-readable error message to include in the log
- * @param error - Optional error details; if an `Error` object, its `message` is used, otherwise the value is logged as-is
- */
-function logError(message: string, error?: any) {
-  console.error(JSON.stringify({
-    level: 'error',
-    module: 'memory-vector',
-    message,
-    error: error instanceof Error ? error.message : error,
-    timestamp: new Date().toISOString()
-  }));
 }
 
 /**

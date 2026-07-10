@@ -255,7 +255,7 @@ export class EnhancedAgent {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
       const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder';
 
-      this.cme = new EnhancedContextMemoryEngine(supabaseUrl, supabaseKey);
+      this.cme = new EnhancedContextMemoryEngine(supabaseUrl, supabaseKey, this.config.projectId || this.config.sessionId);
       await this.cme.initializeProject(this.config.projectId || this.config.sessionId);
       console.log('[EnhancedAgent] CME initialized');
     } catch (error) {
@@ -349,7 +349,7 @@ ${relevantContext.map(r => `- [${r.entry.type}]: ${r.entry.content.substring(0, 
         // Record tool transitions
         if (step.toolCalls) {
           for (const call of step.toolCalls) {
-            await recordTransition('user_input', call.toolName, contextType);
+            await recordTransition('user_input', call.toolName, { contextName: contextType });
 
             // Add to CME if enabled
             if (this.config.enableCME && this.cme) {
@@ -357,7 +357,8 @@ ${relevantContext.map(r => `- [${r.entry.type}]: ${r.entry.content.substring(0, 
                 type: 'tool',
                 content: `${call.toolName}: ${JSON.stringify(call.args)}`,
                 importance: 0.8,
-                metadata: { result: call.result },
+                // SDK ai v4: el resultado va en step.toolResults, no en el tool-call
+                metadata: { result: step.toolResults?.find(r => r.toolCallId === call.toolCallId)?.result },
               });
             }
           }
@@ -374,7 +375,8 @@ ${relevantContext.map(r => `- [${r.entry.type}]: ${r.entry.content.substring(0, 
       toolCalls: result.toolCalls?.map(tc => ({
         toolName: tc.toolName,
         args: tc.args,
-        result: tc.result,
+        // SDK ai v4: emparejar resultado por toolCallId desde result.toolResults
+        result: result.toolResults?.find(r => r.toolCallId === tc.toolCallId)?.result,
         success: true,
       })),
     };
@@ -549,6 +551,7 @@ ${relevantContext.map(r => `- [${r.entry.type}]: ${r.entry.content.substring(0, 
     await this.cme.addEntry(this.config.projectId, {
       ...entry,
       importance: entry.importance || 0.5,
+      metadata: entry.metadata ?? {},
     });
   }
 
