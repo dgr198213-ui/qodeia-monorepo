@@ -90,6 +90,17 @@ La descripción funcional y el diagrama están en el README.
   JSON estructurada (mismo patrón que BiasFirewall) y render del plan.
 - Los 4 usan el helper `agentAuth.js` (JWT único de la Fase 3A).
 
+## Auth del ecosistema (decisión 2026-07-10)
+
+**Email + contraseña como único método** en portal e IDE. Se eliminó el OAuth
+de Google (login de usuarios) para evitar el mantenimiento de Google Cloud
+Console en fase exploratoria; las rutas `/api/mcp/auth/google` que quedan son
+otra cosa (integración NotebookLM de la capa MCP). Si algún día se quiere
+recuperar Google: reactivar el proveedor en Supabase y añadir el botón — las
+identidades se vinculan por email, no hay migración. Nota operativa: en el
+dashboard de Supabase conviene desactivar el proveedor Google y revisar si se
+exige confirmación de email en signUp.
+
 ## Estudio del ecosistema (leer antes de la Fase 3)
 
 `docs/ARQUITECTURA-ECOSISTEMA.md` contiene el mapa completo de integración:

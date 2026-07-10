@@ -46,26 +46,6 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // Iniciar sesión con Google
-  signInWithGoogle: async () => {
-    try {
-      set({ loading: true, error: null });
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-
-      if (error) throw error;
-      return { success: true, data };
-    } catch (error) {
-      console.error('Error al iniciar sesión con Google:', error);
-      set({ error: error.message, loading: false });
-      return { success: false, error: error.message };
-    }
-  },
-
   // Registrarse
   signUp: async (email, password) => {
     try {
