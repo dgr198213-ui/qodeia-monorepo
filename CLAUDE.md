@@ -2,7 +2,7 @@
 
 > Documento de continuidad para sesiones de trabajo (humanas o con agentes).
 > **Actualízalo al final de cada sesión que cambie el estado del repo.**
-> Última actualización: 2026-07-10 (Fase 3A completada).
+> Última actualización: 2026-07-10 (Fases 3A y 3B completadas).
 
 ## Qué es este repo
 
@@ -75,6 +75,20 @@ La descripción funcional y el diagrama están en el README.
 - **Pendiente manual (Dani)**: aplicar las migraciones 0001..0005 en el
   proyecto Supabase único (SQL Editor, en orden) y poner las env vars reales
   en Vercel. Hasta entonces el contrato existe pero la BD no.
+
+## Fase 3B — prototipos del IDE cerrados (completada)
+
+- **CodeEditor ↔ Agente**: botón "Pedir al Agente" que envía instrucción +
+  buffer como `context {language, code}` a POST /api/agent; la respuesta se
+  muestra en panel y el código puede insertarse vía EditorBridge.insertCode.
+  "Guardar" persiste en `project_files` (upsert por project_id+path).
+- **Connectors**: de stub a panel real — GET /api/health + /api/mcp/stats
+  con refresco manual.
+- **MoltbotPanel**: chat conectado al agente (mensaje prefijado [MOLBOT]
+  para que el CEO delegue en MolbotSpecialist).
+- **SolveItIterator**: descomposición iterativa de problemas con respuesta
+  JSON estructurada (mismo patrón que BiasFirewall) y render del plan.
+- Los 4 usan el helper `agentAuth.js` (JWT único de la Fase 3A).
 
 ## Estudio del ecosistema (leer antes de la Fase 3)
 
