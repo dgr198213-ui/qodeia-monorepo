@@ -8,7 +8,7 @@ Monorepo gestionado con **pnpm 10 + Turborepo 2** (Node >= 20).
 
 ## Estado del proyecto
 
-> Última actualización: 10 julio 2026 · Contexto de continuidad entre sesiones en [`CLAUDE.md`](./CLAUDE.md)
+> Última actualización: 10 julio 2026 · Continuidad en [`CLAUDE.md`](./CLAUDE.md) · Integración del ecosistema en [`docs/ARQUITECTURA-ECOSISTEMA.md`](./docs/ARQUITECTURA-ECOSISTEMA.md)
 
 | Área | Estado |
 |---|---|
