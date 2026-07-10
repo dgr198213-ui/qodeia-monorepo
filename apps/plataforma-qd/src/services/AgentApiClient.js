@@ -7,11 +7,20 @@
 
 import contextMemoryEngine from './ContextMemoryEngine';
 import { logger } from '../utils/logger';
+import { getAgentToken, AGENT_BASE_URL } from './agentAuth';
 
 class AgentApiClient {
   constructor() {
-    this.baseUrl = import.meta.env.VITE_AGENT_URL || 'https://mi-agente-qode-ia.vercel.app';
+    this.baseUrl = AGENT_BASE_URL;
     this.sessionToken = null;
+  }
+
+  async ensureSessionToken() {
+    // Fase 3A: si nadie fijó el token manualmente, tomarlo de la sesión activa
+    if (!this.sessionToken) {
+      this.sessionToken = await getAgentToken();
+    }
+    return this.sessionToken;
   }
 
   setSessionToken(token) {
@@ -65,6 +74,7 @@ class AgentApiClient {
       };
 
       // 3. Llamar al agente
+      await this.ensureSessionToken();
       const response = await fetch(`${this.baseUrl}/api/agent/execute`, {
         method: 'POST',
         headers: {
@@ -134,6 +144,7 @@ class AgentApiClient {
       };
 
       // 3. Llamada
+      await this.ensureSessionToken();
       const response = await fetch(`${this.baseUrl}/api/agent/chat`, {
         method: 'POST',
         headers: {
@@ -162,6 +173,7 @@ class AgentApiClient {
    */
   async queryMemory(projectId, query) {
     try {
+      await this.ensureSessionToken();
       const response = await fetch(`${this.baseUrl}/api/agent/memory`, {
         method: 'POST',
         headers: {
@@ -204,6 +216,7 @@ class AgentApiClient {
       logger.info('[AgentAPI] CME cargado:', cmeStats);
 
       // 2. Enviar índice al agente para L2 cache
+      await this.ensureSessionToken();
       const response = await fetch(`${this.baseUrl}/api/agent/sync`, {
         method: 'POST',
         headers: {

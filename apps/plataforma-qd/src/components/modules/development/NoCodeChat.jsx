@@ -1,3 +1,4 @@
+import { getAgentHeaders, AGENT_BASE_URL } from '../../../services/agentAuth';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, MessageSquare, Send, Bot, User, Sparkles } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
@@ -10,7 +11,7 @@ const NoCodeChat = ({ onBack }) => {
   const { user } = useAuthStore();
   const messagesEndRef = useRef(null);
 
-  const AGENT_URL = 'https://mi-agente-qode-ia.vercel.app/api/agent';
+  const AGENT_URL = `${AGENT_BASE_URL}/api/agent`;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,9 +32,7 @@ const NoCodeChat = ({ onBack }) => {
     try {
       const response = await fetch(AGENT_URL, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
+        headers: await getAgentHeaders(),
         body: JSON.stringify({ 
           message: input, 
           context: editorContext,

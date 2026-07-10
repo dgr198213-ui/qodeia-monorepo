@@ -12,7 +12,9 @@ import { ArrowLeft, Shield, AlertTriangle, CheckCircle, TrendingUp, Loader2, Ref
  * - Historial de análisis dinámico
  */
 
-const AGENT_URL = import.meta.env.VITE_AGENT_URL || 'https://mi-agente-qode-ia.vercel.app';
+import { getAgentHeaders, AGENT_BASE_URL } from '../../../services/agentAuth';
+
+const AGENT_URL = AGENT_BASE_URL;
 
 const initialMetrics = {
   overallScore: null,
@@ -41,7 +43,7 @@ const BiasFirewall = ({ onBack }) => {
     try {
       const response = await fetch(`${AGENT_URL}/api/agent`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAgentHeaders(),
         body: JSON.stringify({
           message: `Analiza el siguiente texto en busca de sesgos (género, etnicidad, lenguaje excluyente). 
 Responde ÚNICAMENTE con un JSON con la siguiente estructura:

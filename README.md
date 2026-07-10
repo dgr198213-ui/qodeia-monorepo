@@ -16,14 +16,15 @@ Monorepo gestionado con **pnpm 10 + Turborepo 2** (Node >= 20).
 | `@qodeia/shared`, `apps/web-qodeia`, `apps/api`, paquetes base | ✅ Compilan y pasan CI |
 | `@qodeia/agent-core` | ✅ **Reincorporado al CI** (Fase 2): 0 errores TS, 96/96 tests. Cliente Supabase tipado como `any` pendiente de tipos generados. |
 | Paquetes `orchestration`, `workflows`, `prompts`, `tools`, `memory` | 🚧 Esqueletos — la lógica real vive aún en `agent-core/agent/` |
-| Esquemas SQL | ⚠️ Múltiples ficheros dispersos; pendiente consolidar en `supabase/migrations/` como fuente de verdad única |
+| Esquemas SQL | ✅ Consolidados en `supabase/migrations/0001..0005` (Fase 3A); los antiguos, archivados en `supabase/legacy/` |
 
 El desarrollo activo está actualmente pausado en favor de otros proyectos. El CI se mantiene en verde como línea base para retomar el trabajo con seguridad.
 
 ### Plan de consolidación (pendiente)
 
 1. ~~**Fase 2 — agent-core**~~ ✅ Completada: 36 errores TS → 0, tests 96/96, filtros de CI retirados, tests duplicados de `__tests__/` consolidados en los colocados junto al código.
-2. **Fase 3 — arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
+2. ~~**Fase 3A — columna vertebral**~~ ✅ Completada: contrato IDE↔Agente (7 endpoints), esquema unificado en migraciones, JWT único en los módulos del IDE.
+3. **Fase 3B/3C — prototipos y arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
 
 ---
 
