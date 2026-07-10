@@ -25,7 +25,7 @@ El desarrollo activo está actualmente pausado en favor de otros proyectos. El C
 1. ~~**Fase 2 — agent-core**~~ ✅ Completada: 36 errores TS → 0, tests 96/96, filtros de CI retirados, tests duplicados de `__tests__/` consolidados en los colocados junto al código.
 2. ~~**Fase 3A — columna vertebral**~~ ✅ Completada: contrato IDE↔Agente (7 endpoints), esquema unificado en migraciones, JWT único en los módulos del IDE.
 3. ~~**Fase 3B — prototipos del IDE**~~ ✅ Completada: CodeEditor↔Agente, Connectors, MoltbotPanel y SolveItIterator conectados de verdad al agente.
-4. **Fase 3C — arquitectura**: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
+4. ~~**Fase 3C — higiene estructural**~~ ✅ Completada: qodeia-arch saneado y en CI, paquetes esqueleto eliminados, código muerto fuera, pipeline sin exclusiones. Pendiente opcional: extraer la lógica de agente de `agent-core` a un paquete puro (sin Next/React) y mover su UI a `apps/`; completar o eliminar los paquetes esqueleto; reubicar `qodeia-arch`.
 
 ---
 
@@ -73,15 +73,10 @@ qodeia-monorepo/
 ├── packages/
 │   ├── shared/            # SDK compartido (auth, api-client, env, tokens…)
 │   ├── agent-core/        # Núcleo del agente (⚠️ ver Estado)
-│   ├── orchestration/     # 🚧 esqueleto
-│   ├── workflows/         # 🚧 esqueleto
-│   ├── prompts/           # 🚧 esqueleto
-│   ├── tools/             # 🚧 esqueleto
-│   ├── memory/            # 🚧 esqueleto
 │   ├── ui/                # Componentes UI
 │   ├── types/             # Definiciones de tipos
 │   └── config/            # Configuraciones compartidas
-├── qodeia-arch/           # App full-stack heredada (pendiente de reubicar)
+├── qodeia-arch/           # App full-stack heredada (saneada; en la raíz por el Root Directory de Vercel)
 ├── docs/                  # Documentación por área
 └── .github/workflows/     # CI consolidado (ci.yml)
 ```
@@ -106,7 +101,6 @@ qodeia-monorepo/
 Un único workflow (`.github/workflows/ci.yml`) ejecuta lint → typecheck → test → build con:
 
 - `pnpm install --frozen-lockfile`: el CI falla si el lockfile no coincide con los `package.json`. Es una barrera deliberada contra cambios de dependencias no revisados, incluidos los introducidos por agentes con acceso al repo.
-- Exclusión temporal de `@qodeia/agent-core` (ver Estado).
 - Cache de Turborepo entre ejecuciones.
 
 ## Seguridad

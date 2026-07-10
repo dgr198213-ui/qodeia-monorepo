@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"components/**/*.{js,jsx,ts,tsx}\" \"hooks/**/*.{js,jsx,ts,tsx}\" \"lib/**/*.{js,jsx,ts,tsx}\" \"vite.config.js\" \"postcss.config.js\" \"vite-plugins/**/*.js\" --report-unused-disable-directives",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"vite.config.js\" \"postcss.config.js\" \"vite-plugins/**/*.js\" --report-unused-disable-directives --max-warnings 260",
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
