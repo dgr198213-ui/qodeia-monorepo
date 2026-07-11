@@ -1,4 +1,4 @@
-# QodeIA Monorepo
+# QodeIA Monorepo.
 
 Plataforma **agent-first** para desarrollo asistido por agentes autónomos: un orquestador multi-agente (CEO + especialistas) con memoria contextual, integración MCP y guardrails de seguridad, más las aplicaciones web que lo exponen.
 
