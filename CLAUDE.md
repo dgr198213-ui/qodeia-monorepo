@@ -72,9 +72,13 @@ La descripción funcional y el diagrama están en el README.
   (getAgentHeaders/getAgentToken/AGENT_BASE_URL). Cableado en mcp-service,
   NoCodeChat, BiasFirewall, HypeDetector y AgentApiClient (ensureSessionToken).
   AGENT_URL por defecto → `https://qodeia-monorepo-agent-core.vercel.app`.
-- **Pendiente manual (Dani)**: aplicar las migraciones 0001..0005 en el
-  proyecto Supabase único (SQL Editor, en orden) y poner las env vars reales
-  en Vercel. Hasta entonces el contrato existe pero la BD no.
+- **BD APLICADA (2026-07-18)**: las migraciones 0001..0007 están aplicadas en
+  el proyecto Supabase `qodeia-monorepo` (mlpxjyqhezeksyininnu, eu-west-1) —
+  30 tablas + RPC, RLS activo en todas. 0006 reconcilia esquema↔código
+  (messages.user_id/metadata, tasks.type/result, agent_nodes.rank_score);
+  0007 cierra el advisory de RLS del grafo PageRank.
+- **Pendiente manual (Dani)**: SOLO las env vars en Vercel (ver README /
+  último informe de sesión) y redeploy. La BD ya está lista.
 
 ## Fase 3B — prototipos del IDE cerrados (completada)
 
