@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCEOOrchestrator } from '@/agent/core/CEOOrchestrator';
 import { createClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
+import { requireAdmin } from '@/lib/auth';
 
 // Configuración de timeouts
 const CONFIG = {
@@ -22,23 +23,6 @@ const supabase = createClient(
 );
 
 /**
- * Verifica el token JWT del usuario
- */
-async function verifyAuth(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-  const token = authHeader.substring(7);
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) return null;
-    return user;
-  } catch (error) {
-    logger.error('Error verifying auth', error as Error, 'auth');
-    return null;
-  }
-}
-
-/**
  * Endpoint principal del agente
  */
 export async function POST(request: NextRequest) {
@@ -46,11 +30,9 @@ export async function POST(request: NextRequest) {
   let ceo: any = null;
 
   try {
-    // 1. Verificar autenticación
-    const user = await verifyAuth(request);
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-    }
+    // 1. Verificar autorización de administrador
+    const { user, error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     // 2. Parsear body
     const body = await request.json();

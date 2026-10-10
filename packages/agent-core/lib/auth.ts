@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 /**
@@ -29,6 +29,17 @@ export async function verifyAuth(request: NextRequest) {
   } catch {
     return null;
   }
+}
+
+export async function requireAdmin(request: NextRequest) {
+  const user = await verifyAuth(request);
+  if (!user) {
+    return { user: null, error: NextResponse.json({ error: 'No autorizado' }, { status: 401 }) };
+  }
+  if (user.app_metadata?.role !== 'admin') {
+    return { user: null, error: NextResponse.json({ error: 'Prohibido' }, { status: 403 }) };
+  }
+  return { user, error: null };
 }
 
 /** Cliente service-role compartido para persistencia desde las rutas. */

@@ -14,6 +14,12 @@ import { createProValidator, ProValidator } from '../specialists/ProValidator';
 import { createMolbotSpecialist, MolbotSpecialist } from '../specialists/MolbotSpecialist';
 import { createNoCodeSpecialist, NoCodeSpecialist } from '../specialists/NoCodeSpecialist';
 
+export const DISABLED_SPECIALISTS = new Set(['supabase']);
+
+export function isSpecialistDisabled(name: string): boolean {
+  return DISABLED_SPECIALISTS.has(name);
+}
+
 export interface CEORequest {
   userMessage: string;
   context?: string;
@@ -150,12 +156,11 @@ You are analyzing a user request to determine which specialist agents should han
 User request: "${userMessage}"
 
 Analyze and respond with a JSON array of tasks to delegate. Each task should have:
-- specialist: 'github' | 'supabase' | 'vercel' | 'mcp' | 'logic' | 'pro_validator' | 'molbot_specialist' | 'nocode_specialist'
+- specialist: 'github' | 'vercel' | 'mcp' | 'logic' | 'pro_validator' | 'molbot_specialist' | 'nocode_specialist'
 - task: specific task description for that specialist
 
 Specialist selection rules:
 - 'github': Repository operations, code management, PRs, issues
-- 'supabase': Database, auth, vector search
 - 'vercel': Deployments, environment variables
 - 'mcp': Documentation, analysis, NotebookLM
 - 'logic': Logical reasoning, mathematical analysis, counting problems
@@ -201,6 +206,16 @@ Only include specialists that are actually needed. Respond ONLY with valid JSON 
     const results: DelegatedTask[] = [];
 
     for (const task of tasks) {
+      if (isSpecialistDisabled(task.specialist)) {
+        results.push({
+          specialist: task.specialist,
+          task: task.task,
+          result: 'Especialista desactivado temporalmente por contención de seguridad',
+          executionTime: 0
+        });
+        continue;
+      }
+
       try {
         let result;
 

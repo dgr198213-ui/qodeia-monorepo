@@ -5,7 +5,6 @@
 
 import { generateText, CoreMessage } from 'ai';
 import { createLLMClient, SPECIALIST_CONFIGS } from '../core/MultiLLMConfig';
-import { supabaseTools } from '../tools/supabase';
 
 export interface SupabaseSpecialistRequest {
   task: string;
@@ -48,12 +47,11 @@ export class SupabaseSpecialist {
         content: userMessage
       });
 
-      // Llamar al LLM con herramientas de Supabase
+      // Llamar al LLM sin herramientas de Supabase durante la contención P0
       const result = await generateText({
         model: this.llm,
         system: SPECIALIST_CONFIGS.supabase.systemPrompt,
         messages: this.conversationHistory,
-        tools: supabaseTools,
         maxSteps: 5,
         temperature: SPECIALIST_CONFIGS.supabase.temperature,
       });
