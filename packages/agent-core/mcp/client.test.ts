@@ -271,7 +271,7 @@ describe('MCPClient – query cache', () => {
     });
 
     // The query should try to connect (and fail since no 'ready' is emitted)
-    const queryPromise = client.query({ server: 'test-server', query: 'old question' });
+    const queryPromise = client.query({ server: 'test-server', query: 'old question' }).catch(() => {});
     setImmediate(() => freshChild.stdout.emit('data', Buffer.from('ready')));
 
     // It will then try sendRequest which times out; we just care that spawn was called
