@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { EnhancedContextMemoryEngine } from '@/agent/core/EnhancedContextMemory';
 
 /**
@@ -15,10 +15,8 @@ import { EnhancedContextMemoryEngine } from '@/agent/core/EnhancedContextMemory'
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await verifyAuth(request);
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-    }
+    const { error } = await requireAdmin(request);
+    if (error) return error;
 
     const body = await request.json().catch(() => ({}));
     const { projectId, query, limit } = body;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, serviceClient } from '@/lib/auth';
+import { requireAdmin, serviceClient } from '@/lib/auth';
 import { createCEOOrchestrator } from '@/agent/core/CEOOrchestrator';
 
 export const maxDuration = 60;
@@ -17,10 +17,8 @@ export const maxDuration = 60;
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   try {
-    const user = await verifyAuth(request);
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-    }
+    const { user, error } = await requireAdmin(request);
+    if (error) return error;
 
     const body = await request.json().catch(() => ({}));
     const { task, projectId, context } = body;
