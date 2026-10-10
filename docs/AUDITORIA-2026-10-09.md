@@ -16,11 +16,25 @@
 
 ## Corregido por los PRs A y B
 
-Los PRs [#14](https://github.com/dgr198213-ui/qodeia-monorepo/pull/14) y [#15](https://github.com/dgr198213-ui/qodeia-monorepo/pull/15) corrigieron las herramientas de Supabase desactivadas, `execute`/`chat`/`memory` solo admin, `reload` protegido o eliminado y el test intermitente de `mcp/client.test.ts` arreglado.
+El PR [#14](https://github.com/dgr198213-ui/qodeia-monorepo/pull/14) corrige el rechazo no controlado intermitente de `mcp/client.test.ts` (test de expiración de caché), que también fallaba en `main` limpio.
+
+El PR [#15](https://github.com/dgr198213-ui/qodeia-monorepo/pull/15) deja `supabaseTools` vacío; bloquea en código la delegación al especialista `supabase`; y exige `app_metadata.role === 'admin'` (JWT verificado en servidor) para `execute`, `chat`, `memory`, `reload` y `POST /api/agent`.
+
+## Hallazgos nuevos tras el PR B (no corregidos)
+
+1. `GET /api/mcp/auth/callback`, `POST /api/mcp/auth/google`, `GET /api/mcp/stats` y `POST /api/mcp/test` no tienen autenticación y usan el cliente `supabase` de agent-core.
+2. Las rutas `/api/agent/*` y `/api/mcp/*` en `web-qodeia` son proxies sin autenticación propia.
+3. Las páginas `/admin/mcp` de agent-core (línea 231) y web-qodeia (línea 219) llaman a `/api/agent/reload` sin `Authorization`; por tanto reciben 401 tras el PR #15.
+4. `sync`, `sync-solution` y `mcp/sync` solo usan `verifyAuth` con `serviceClient`.
+5. `EnhancedAgent.ts` y `agent.ts` siguen cargando `mcp_notebooklm`, con herramientas que escriben (`queryDocumentation` y `syncSolutionToKnowledgeBase`); no se encontraron importadores.
+
+## Límites de las pruebas
+
+La ruta `POST /api/agent` no tiene pruebas. `reload` solo prueba el 401. Los casos de administrador usan dependencias simuladas y no una sesión real. El estado en producción no está verificado.
 
 ## Pendiente
 
-No resuelto por esos PRs: credenciales en `localStorage`; propiedad de proyectos y conversaciones; herramientas de Supabase acotadas por usuario; aprobaciones humanas persistentes; ruta de memoria; quién usa `EnhancedAgent`; que las migraciones 0001..0007 estén aplicadas en producción; variables de entorno reales de Vercel; contradicciones entre README y `CLAUDE.md`.
+No resuelto por esos PRs: credenciales en `localStorage`; propiedad de proyectos y conversaciones; herramientas de Supabase acotadas por usuario; aprobaciones humanas persistentes; ruta de memoria; quién usa `EnhancedAgent`; que las migraciones 0001..0007 estén aplicadas en producción; variables de entorno reales de Vercel; contradicciones entre README y `CLAUDE.md`; autenticación de los endpoints/proxies MCP enumerados, y envío del bearer token desde las páginas administrativas a `/api/agent/reload`.
 
 ## Aviso
 
