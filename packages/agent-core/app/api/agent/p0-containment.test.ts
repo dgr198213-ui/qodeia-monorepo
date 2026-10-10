@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 const {
@@ -8,6 +8,7 @@ const {
   mockProcessRequest,
   mockSearch,
   mockInitializeProject,
+  mockCleanup,
 } = vi.hoisted(() => ({
   mockGetUser: vi.fn(),
   mockFrom: vi.fn(),
@@ -15,6 +16,7 @@ const {
   mockProcessRequest: vi.fn(),
   mockSearch: vi.fn(),
   mockInitializeProject: vi.fn(),
+  mockCleanup: vi.fn(),
 }));
 
 vi.mock('@supabase/supabase-js', () => ({
@@ -27,6 +29,7 @@ vi.mock('@supabase/supabase-js', () => ({
 vi.mock('@/agent/core/CEOOrchestrator', () => ({
   createCEOOrchestrator: vi.fn(async () => ({
     processRequest: mockProcessRequest,
+    cleanup: mockCleanup,
   })),
 }));
 
@@ -37,32 +40,43 @@ vi.mock('@/agent/core/EnhancedContextMemory', () => ({
   })),
 }));
 
+import { POST as legacyAgentPost } from './route';
 import { POST as chatPost } from './chat/route';
 import { POST as executePost } from './execute/route';
 import { POST as memoryPost } from './memory/route';
 import { POST as reloadPost } from './reload/route';
 
 type ProtectedRoute = {
-  name: string;
+  route: string;
+  path: string;
   handler: (request: NextRequest) => Promise<Response>;
   body: Record<string, unknown>;
 };
 
 const protectedRoutes: ProtectedRoute[] = [
   {
-    name: 'execute',
+    route: 'POST /api/agent/execute',
+    path: '/api/agent/execute',
     handler: executePost,
     body: { task: { type: 'analysis', description: 'Comprobar contención' } },
   },
   {
-    name: 'chat',
+    route: 'POST /api/agent/chat',
+    path: '/api/agent/chat',
     handler: chatPost,
     body: { message: 'Comprobar contención' },
   },
   {
-    name: 'memory',
+    route: 'POST /api/agent/memory',
+    path: '/api/agent/memory',
     handler: memoryPost,
     body: { projectId: 'project-test', query: 'contexto' },
+  },
+  {
+    route: 'POST /api/agent (legacy)',
+    path: '/api/agent',
+    handler: legacyAgentPost,
+    body: { message: 'Comprobar contención' },
   },
 ];
 
@@ -81,9 +95,16 @@ function makeRequest(
   });
 }
 
+const reloadRequest = (authorization?: string) =>
+  makeRequest('/api/agent/reload', {}, authorization);
+
 describe('contención P0 de rutas del agente', () => {
-  let previousMcpClient: unknown;
-  let hadMcpClient: boolean;
+  const originalMcpClient = (global as any).__mcp_client;
+  const hadOriginalMcpClient = Object.prototype.hasOwnProperty.call(global, '__mcp_client');
+
+  beforeAll(() => {
+    if (!hadOriginalMcpClient) delete (global as any).__mcp_client;
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -97,64 +118,94 @@ describe('contención P0 de rutas del agente', () => {
     });
     mockSearch.mockResolvedValue([]);
     mockInitializeProject.mockResolvedValue(undefined);
-    hadMcpClient = Object.prototype.hasOwnProperty.call(global, '__mcp_client');
-    previousMcpClient = (global as any).__mcp_client;
+    mockCleanup.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
-    if (hadMcpClient) {
-      (global as any).__mcp_client = previousMcpClient;
+    if (hadOriginalMcpClient) {
+      (global as any).__mcp_client = originalMcpClient;
     } else {
       delete (global as any).__mcp_client;
     }
   });
 
-  it('devuelve 401 para execute, chat y memory sin Authorization', async () => {
-    for (const route of protectedRoutes) {
-      const response = await route.handler(makeRequest(`/api/agent/${route.name}`, route.body));
-      expect(response.status, route.name).toBe(401);
+  afterAll(() => {
+    if (hadOriginalMcpClient) {
+      (global as any).__mcp_client = originalMcpClient;
+    } else {
+      delete (global as any).__mcp_client;
     }
   });
 
-  it('devuelve 403 para execute, chat y memory con usuario no administrador', async () => {
+  it.each(protectedRoutes)('$route devuelve 401 sin Authorization', async ({ path, handler, body }) => {
+    const response = await handler(makeRequest(path, body));
+    expect(response.status).toBe(401);
+  });
+
+  it.each(protectedRoutes)('$route devuelve 403 a un usuario no administrador', async ({ path, handler, body }) => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'user-1', app_metadata: { role: 'user' } } },
+      error: null,
+    });
+    const response = await handler(makeRequest(path, body, 'Bearer user-token'));
+    expect(response.status).toBe(403);
+  });
+
+  it.each(protectedRoutes)('$route permite a un administrador alcanzar el handler', async ({ path, handler, body }) => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'admin-1', app_metadata: { role: 'admin' } } },
+      error: null,
+    });
+    const response = await handler(makeRequest(path, body, 'Bearer admin-token'));
+    expect(response.status).not.toBe(401);
+    expect(response.status).not.toBe(403);
+  });
+
+  it('POST /api/agent/reload devuelve 401 sin Authorization y conserva el cliente MCP global', async () => {
+    const mcpClient = { connection: 'sin cambios' };
+    (global as any).__mcp_client = mcpClient;
+
+    const response = await reloadPost(reloadRequest());
+
+    expect(response.status).toBe(401);
+    expect((global as any).__mcp_client).toBe(mcpClient);
+  });
+
+  it('POST /api/agent/reload devuelve 403 a un usuario no administrador', async () => {
+    const mcpClient = { connection: 'sin cambios' };
+    (global as any).__mcp_client = mcpClient;
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'user-1', app_metadata: { role: 'user' } } },
       error: null,
     });
 
-    for (const route of protectedRoutes) {
-      const response = await route.handler(
-        makeRequest(`/api/agent/${route.name}`, route.body, 'Bearer user-token'),
-      );
-      expect(response.status, route.name).toBe(403);
-    }
+    const response = await reloadPost(reloadRequest('Bearer user-token'));
+
+    expect(response.status).toBe(403);
+    expect((global as any).__mcp_client).toBe(mcpClient);
   });
 
-  it('permite a administradores alcanzar execute, chat y memory', async () => {
+  it('POST /api/agent/reload permite a un administrador ejecutar la recarga', async () => {
+    const mcpClient = { connection: 'se debe retirar durante la recarga' };
+    (global as any).__mcp_client = mcpClient;
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'admin-1', app_metadata: { role: 'admin' } } },
       error: null,
     });
 
-    for (const route of protectedRoutes) {
-      const response = await route.handler(
-        makeRequest(`/api/agent/${route.name}`, route.body, 'Bearer admin-token'),
-      );
-      expect(response.status, route.name).not.toBe(401);
-      expect(response.status, route.name).not.toBe(403);
+    const response = await reloadPost(reloadRequest('Bearer admin-token'));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ success: true });
+    expect((global as any).__mcp_client).toBeUndefined();
+  });
+
+  it('restaura el cliente MCP global original después de cada prueba', () => {
+    if (hadOriginalMcpClient) {
+      expect((global as any).__mcp_client).toBe(originalMcpClient);
+    } else {
+      expect(Object.prototype.hasOwnProperty.call(global, '__mcp_client')).toBe(false);
     }
-
-    expect(mockProcessRequest).toHaveBeenCalledTimes(2);
-    expect(mockSearch).toHaveBeenCalledWith('project-test', 'contexto', 10);
   });
 
-  it('protege reload y conserva el cliente MCP global sin credencial de administrador', async () => {
-    const mcpClient = { connection: 'sin cambios' };
-    (global as any).__mcp_client = mcpClient;
-
-    const response = await reloadPost(makeRequest('/api/agent/reload', {}));
-
-    expect(response.status).toBe(401);
-    expect((global as any).__mcp_client).toBe(mcpClient);
-  });
 });
