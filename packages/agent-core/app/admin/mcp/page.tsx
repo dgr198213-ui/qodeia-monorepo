@@ -228,7 +228,17 @@ export default function MCPAdminPanel() {
       updated_at: new Date().toISOString(),
     });
 
-    await fetch('/api/agent/reload', { method: 'POST' });
+    const { data: { session } } = await supabase.auth.getSession();
+    const response = await fetch('/api/agent/reload', {
+      method: 'POST',
+      ...(session?.access_token && {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      }),
+    });
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      alert(result.error || `Error al recargar MCP (${response.status})`);
+    }
   }
 
   if (loading) {
